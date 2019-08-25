@@ -1,83 +1,49 @@
 {
-  "_from": "hcitool-reader@1.2.9",
-  "_id": "hcitool-reader@1.2.9",
-  "_inBundle": false,
-  "_integrity": "sha512-BU2iQPnJTigO7sL5F+t+FflOxxgmU1D0vRjbvXoHcL3kJ4imKHIVjTwP3kfQ8uW7/AhDI3iw0knujYs13K+jVA==",
-  "_location": "/hcitool-reader",
-  "_phantomChildren": {},
-  "_requested": {
-    "type": "version",
-    "registry": true,
-    "raw": "hcitool-reader@1.2.9",
-    "name": "hcitool-reader",
-    "escapedName": "hcitool-reader",
-    "rawSpec": "1.2.9",
-    "saveSpec": null,
-    "fetchSpec": "1.2.9"
-  },
-  "_requiredBy": [
-    "#USER"
-  ],
-  "_resolved": "https://registry.npmjs.org/hcitool-reader/-/hcitool-reader-1.2.9.tgz",
-  "_shasum": "397269eccf3e2fc1dc23aaaee48a622ce6b81c68",
-  "_spec": "hcitool-reader@1.2.9",
-  "_where": "/Users/Lu4/Projects/Irees/hcitool-reader",
-  "bin": {
-    "hcitool-reader": "./bin/launch.js"
-  },
-  "bugs": {
-    "url": "https://github.com/lu4/hcitool-reader/issues"
-  },
-  "bundleDependencies": false,
-  "dependencies": {
-    "@types/cli-progress": "^1.8.1",
-    "@types/node": "^12.0.12",
-    "@types/split": "^1.0.0",
-    "@types/uuid": "^3.4.5",
-    "@types/yargs": "^13.0.0",
-    "mqtt": "^3.0.0",
-    "reflect-metadata": "^0.1.13",
-    "split": "^1.0.1",
-    "ts-node": "^8.1.0",
-    "typescript": "^3.1.6",
-    "uuid": "^3.3.2",
-    "yargs": "^13.2.4"
-  },
-  "deprecated": false,
-  "description": "Typescript CLI Boilerplate",
-  "devDependencies": {
-    "tslint": "^5.11.0",
-    "tslint-config-prettier": "^1.17.0",
-    "tslint-immutable": "^5.0.0"
-  },
-  "engines": {
-    "node": ">=8.9"
-  },
-  "homepage": "https://github.com/lu4/hcitool-reader#readme",
-  "keywords": [],
-  "license": "MIT",
-  "main": "src/index.js",
-  "module": "src/index.js",
-  "name": "hcitool-reader",
-  "preferGlobal": true,
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/lu4/hcitool-reader.git"
-  },
-  "scripts": {
-    "debug": "node --require ts-node/register --max_old_space_size=1024 --inspect=0.0.0.0:7000 ./bin/launch.js",
-    "debug-brk": "node --require ts-node/register --max_old_space_size=1024 --inspect-brk=0.0.0.0:7000 ./bin/launch.js",
-    "debug-brk-alt": "node --require ts-node/register --max_old_space_size=1024 --inspect-brk=0.0.0.0:7001 ./bin/launch.js",
-    "lint": "tslint --project . && prettier \"src/**/*.ts\" --list-different",
-    "lint:fix": "tslint --fix --project .",
-    "start": "node --require ts-node/register --max_old_space_size=1024 ./bin/launch.js"
-  },
-  "scripts-info": {
-    "info": "Display information about the package scripts",
-    "fix": "Try to automatically fix any linting problems",
-    "test": "Lint and unit test the project",
-    "watch": "Watch and rebuild the project on save, then rerun relevant tests",
-    "prepare-release": "One-step: clean, build, test, publish docs, and prep a release"
-  },
-  "version": "1.2.9"
+    "name": "cli-template",
+    "version": "1.2.9",
+    "description": "Typescript CLI Boilerplate",
+    "main": "src/index.js",
+    "module": "src/index.js",
+    "repository": "https://github.com/lu4/cli-template",
+    "license": "MIT",
+    "keywords": [],
+    "bin": {
+        "cli-template": "./bin/launch.js"
+    },
+    "preferGlobal": true,
+    "scripts": {
+        "build": "tsc",
+        "start": "node --require ts-node/register --max_old_space_size=1024 ./src/index.ts",
+        "debug": "node --require ts-node/register --max_old_space_size=1024 --inspect=0.0.0.0:7000 ./bin/index.ts",
+        "debug-brk": "node --require ts-node/register --max_old_space_size=1024 --inspect-brk=0.0.0.0:7000 ./bin/index.ts",
+        "debug-brk-alt": "node --require ts-node/register --max_old_space_size=1024 --inspect-brk=0.0.0.0:7001 ./bin/index.ts",
+        "lint": "tslint --project . && prettier \"src/**/*.ts\" --list-different",
+        "lint:fix": "tslint --fix --project ."
+    },
+    "scripts-info": {
+        "info": "Display information about the package scripts",
+        "fix": "Try to automatically fix any linting problems",
+        "test": "Lint and unit test the project",
+        "watch": "Watch and rebuild the project on save, then rerun relevant tests",
+        "prepare-release": "One-step: clean, build, test, publish docs, and prep a release"
+    },
+    "engines": {
+        "node": ">=8.9"
+    },
+    "dependencies": {
+        "@types/node": "^12.7.2",
+        "@types/split": "^1.0.0",
+        "@types/uuid": "^3.4.5",
+        "@types/yargs": "^13.0.2",
+        "mqtt": "^3.0.0",
+        "reflect-metadata": "^0.1.13",
+        "split": "^1.0.1",
+        "ts-node": "^8.3.0",
+        "typescript": "^3.5.3",
+        "uuid": "^3.3.3",
+        "yargs": "^14.0.0"
+    },
+    "devDependencies": {
+        "tslint": "^5.19.0"
+    }
 }
