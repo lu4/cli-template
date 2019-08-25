@@ -23,7 +23,11 @@
     },
     "scripts-info": {
         "pub": "Publish current projectto npm",
-        "build": "Publish current projectto npm",
+        "build": "Transpiles current project from TypeScript into JavaScript",
+        "start": "Start dev build of the project",
+        "debug": "Start debug build of the project",
+        "debug-brk": "Start debug build of the project and break execution at first line of code",
+        "debug-brk-alt": "Start debug build of the project and break execution at first line of code using different than standard debug port",
         "info": "Display information about the package scripts",
         "fix": "Try to automatically fix any linting problems",
         "test": "Lint and unit test the project",
