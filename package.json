@@ -14,9 +14,9 @@
     "scripts": {
         "build": "tsc",
         "start": "node --require ts-node/register --max_old_space_size=1024 ./src/index.ts",
-        "debug": "node --require ts-node/register --max_old_space_size=1024 --inspect=0.0.0.0:7000 ./bin/index.ts",
-        "debug-brk": "node --require ts-node/register --max_old_space_size=1024 --inspect-brk=0.0.0.0:7000 ./bin/index.ts",
-        "debug-brk-alt": "node --require ts-node/register --max_old_space_size=1024 --inspect-brk=0.0.0.0:7001 ./bin/index.ts",
+        "debug": "node --require ts-node/register --max_old_space_size=1024 --inspect=0.0.0.0:7000 ./src/index.ts",
+        "debug-brk": "node --require ts-node/register --max_old_space_size=1024 --inspect-brk=0.0.0.0:7000 ./src/index.ts",
+        "debug-brk-alt": "node --require ts-node/register --max_old_space_size=1024 --inspect-brk=0.0.0.0:7001 ./src/index.ts",
         "lint": "tslint --project . && prettier \"src/**/*.ts\" --list-different",
         "lint:fix": "tslint --fix --project ."
     },
