@@ -12,6 +12,7 @@
     },
     "preferGlobal": true,
     "scripts": {
+        "pub": "tsc && git add . && git commit -a && npm version patch && git push origin master && npm publish",
         "build": "tsc",
         "start": "node --require ts-node/register --max_old_space_size=1024 ./src/index.ts",
         "debug": "node --require ts-node/register --max_old_space_size=1024 --inspect=0.0.0.0:7000 ./src/index.ts",
