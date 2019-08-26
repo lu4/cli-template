@@ -1,14 +1,23 @@
 import 'reflect-metadata';
 
+import fs from 'fs';
 import yargs from 'yargs';
+import specialFolder from 'platform-folders';
 
-import * as fs from 'fs';
 import * as path from 'path';
 
 import { Descriptor, Command, IsCommand } from './command';
 
 export class Runner {
-    public static async main(cwd: string, pwd: string) {
+    public static async main() {
+        const cwd = process.cwd();
+        const pwd = path.join(__dirname, '..');
+        const swd = path.join(specialFolder('userData') || pwd, 'database');
+
+        if (!fs.existsSync(swd)) {
+            fs.mkdirSync(swd);
+        }
+
         let directory = './commands';
         let filenames = fs
             .readdirSync(path.join(__dirname, directory))
