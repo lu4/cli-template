@@ -17,7 +17,7 @@ export interface Command {
     description: string;
     options: CommandOptions<CommandOptionDeclaration>;
 
-    run(name: string, options: CommandOptions<unknown>): Promise<void>;
+    run(name: string, cwd: string, pwd: string, options: CommandOptions<unknown>): Promise<void>;
 }
 
 const CommandSymbol = Symbol('Command');

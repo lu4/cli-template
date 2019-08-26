@@ -1,4 +1,4 @@
 import path from 'path';
 import { Runner } from './runner';
 
-Runner.main(path.join(__dirname, '..'));
+Runner.main(process.cwd(), path.join(__dirname, '..'));

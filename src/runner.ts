@@ -8,7 +8,7 @@ import * as path from 'path';
 import { Descriptor, Command, IsCommand } from './command';
 
 export class Runner {
-    public static async main(pwd: string) {
+    public static async main(cwd: string, pwd: string) {
         let directory = './commands';
         let filenames = fs
             .readdirSync(path.join(__dirname, directory))
@@ -73,7 +73,7 @@ export class Runner {
         const target = descriptors.find(x => x.name === commandName);
 
         if (target) {
-            await target.instance.run(commandName, argv);
+            await target.instance.run(commandName, cwd, pwd, argv);
         } else {
             console.log(`Command '${commandName}' not found!`);
         }

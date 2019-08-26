@@ -35,7 +35,7 @@ export class ExampleCommandNameCommand implements Command {
         return result;
     }
 
-    public async run(name: string, opts: CommandOptions<unknown>): Promise<void> {
+    public async run(name: string, cwd: string, pwd: string, opts: CommandOptions<unknown>): Promise<void> {
         let options = opts as unknown as PullCommandOptions;
 
         console.log(`Command ${ name } successfully executed`);

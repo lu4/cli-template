@@ -1,6 +1,8 @@
 {
     "extends": [
-        "tslint:latest"
+        "tslint:latest",
+        "tslint-config-prettier",
+        "tslint-immutable"
     ],
     "rules": {
         "semicolon": true,
