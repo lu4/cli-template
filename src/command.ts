@@ -1,6 +1,5 @@
 import yargs from 'yargs';
 
-
 export interface Descriptor<T extends Command> {
     name: string;
     instance: T;
@@ -18,6 +17,8 @@ export interface Command {
     options: CommandOptions<CommandOptionDeclaration>;
 
     run(name: string, cwd: string, pwd: string, options: CommandOptions<unknown>): Promise<void>;
+
+    die(signal: "SIGINT" | "SIGTERM" | "SIGQUIT"): Promise<void>;
 }
 
 const CommandSymbol = Symbol('Command');

@@ -2,6 +2,7 @@ import 'reflect-metadata';
 
 import fs from 'fs';
 import yargs from 'yargs';
+import death from 'death';
 import specialFolder from 'platform-folders';
 
 import * as path from 'path';
@@ -82,6 +83,13 @@ export class Runner {
         const target = descriptors.find(x => x.name === commandName);
 
         if (target) {
+            const unsubscribe = death(async signal => {
+                await target.instance.die(signal);
+
+                unsubscribe();
+                process.exit();
+            });
+
             await target.instance.run(commandName, cwd, pwd, argv);
         } else {
             console.log(`Command '${commandName}' not found!`);

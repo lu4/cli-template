@@ -38,10 +38,12 @@
         "node": ">=8.9"
     },
     "dependencies": {
+        "@types/death": "^1.1.0",
         "@types/node": "^12.7.2",
         "@types/split": "^1.0.0",
         "@types/uuid": "^3.4.5",
         "@types/yargs": "^13.0.2",
+        "death": "^1.1.0",
         "mqtt": "^3.0.0",
         "platform-folders": "^0.4.1",
         "reflect-metadata": "^0.1.13",

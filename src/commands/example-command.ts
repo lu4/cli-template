@@ -1,4 +1,3 @@
-
 import { MapOf } from '../types';
 import { Command, CommandOptions, CommandOptionDeclaration } from '../command';
 
@@ -39,7 +38,18 @@ export class ExampleCommandNameCommand implements Command {
         let options = opts as unknown as PullCommandOptions;
 
         console.log(`Command ${ name } successfully executed`);
+
         console.log(`Params:`);
         console.log(JSON.stringify(options, null, 2));
+
+        await new Promise(resolve => setTimeout(resolve, 10000));
+    }
+
+    public async die(signal: "SIGINT" | "SIGTERM" | "SIGQUIT") {
+        // Perform all necessary cleanup in this method
+
+        console.log(`${ signal } signal received, waiting 1 second before dying`);
+        await new Promise(resolve => setTimeout(resolve, 1000)); // Wait for 1 second before actually dying
+        console.log(`${ signal } ok, dying...`);
     }
 }
