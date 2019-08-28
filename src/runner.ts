@@ -83,11 +83,18 @@ export class Runner {
         const target = descriptors.find(x => x.name === commandName);
 
         if (target) {
-            const unsubscribe = death(async signal => {
+            const unsubscribe = death({
+                SIGINT: true,
+                SIGQUIT: true,
+                SIGTERM: true,
+                // SIGHUP: true, // Add this at your own risk
+                uncaughtException: true
+            })(async signal => {
                 await target.instance.die(signal);
 
                 unsubscribe();
-                process.exit();
+
+                process.exit(process.exitCode);
             });
 
             await target.instance.run(commandName, cwd, pwd, argv);
