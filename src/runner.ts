@@ -1,11 +1,11 @@
 import 'reflect-metadata';
 
+import * as path from 'path';
+
 import fs from 'fs';
 import yargs from 'yargs';
 import death from 'death';
 import specialFolder from 'platform-folders';
-
-import * as path from 'path';
 
 import { Descriptor, Command, IsCommand } from './command';
 
@@ -84,26 +84,29 @@ export class Runner {
 
         if (target) {
             let dying = false;
-            const unsubscribe = death({
-                SIGINT: true,
-                SIGQUIT: true,
-                SIGTERM: true,
-                // SIGHUP: true, // Add this at your own risk
-                uncaughtException: true
-            })(async signal => {
+
+            const handleDeath = async (signal: 'SIGINT' | 'SIGTERM' | 'SIGQUIT' | 'SIGHUP' | 'uncaughtException' | 'debug' | 'finish') => {
                 // Make sure we die once
-                if (dying === false) { // I know that `dying` is a boolean, I like writing this way better
+                if (dying === false) { // Due to aesthetic reasons
                     dying = true;
 
-                    await target.instance.die(signal);
-
-                    unsubscribe();
-
-                    process.exit(process.exitCode);
+                    try {
+                        await target.instance.die(signal);
+                    } finally {
+                        unsubscribe();
+                        process.exit(process.exitCode);
+                    }
                 }
-            });
+            };
 
+            const unsubscribe = death({
+                // SIGHUP: true, // Add this option if you know what you are doing
+                SIGINT: true, SIGQUIT: true, SIGTERM: true, uncaughtException: true
+            })(handleDeath);
+            
             await target.instance.run(commandName, cwd, pwd, argv);
+            
+            await target.instance.die('finish');
         } else {
             console.log(`Command '${commandName}' not found!`);
         }

@@ -45,7 +45,7 @@ export class ExampleCommandNameCommand implements Command {
         await new Promise(resolve => setTimeout(resolve, 10000));
     }
 
-    public async die(signal: 'SIGINT' | 'SIGTERM' | 'SIGQUIT' | 'SIGHUP' | 'uncaughtException' | 'debug') {
+    public async die(signal: 'SIGINT' | 'SIGTERM' | 'SIGQUIT' | 'SIGHUP' | 'uncaughtException' | 'debug' | 'finish') {
         // Perform all necessary cleanup in this method
 
         console.log(`${signal} signal received, waiting 1 second before dying`);

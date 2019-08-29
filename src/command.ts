@@ -18,7 +18,7 @@ export interface Command {
 
     run(name: string, cwd: string, pwd: string, options: CommandOptions<unknown>): Promise<void>;
 
-    die(signal: string): Promise<void>;
+    die(signal: 'SIGINT' | 'SIGTERM' | 'SIGQUIT' | 'SIGHUP' | 'uncaughtException' | 'debug' | 'finish'): Promise<void>;
 }
 
 const CommandSymbol = Symbol('Command');
