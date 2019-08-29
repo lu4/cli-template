@@ -37,7 +37,7 @@ export class ExampleCommandNameCommand implements Command {
     public async run(name: string, cwd: string, pwd: string, opts: CommandOptions<unknown>): Promise<void> {
         let options = opts as unknown as PullCommandOptions;
 
-        console.log(`Command ${ name } successfully executed`);
+        console.log(`Command ${name} successfully executed`);
 
         console.log(`Params:`);
         console.log(JSON.stringify(options, null, 2));
@@ -48,8 +48,8 @@ export class ExampleCommandNameCommand implements Command {
     public async die(signal: string) {
         // Perform all necessary cleanup in this method
 
-        console.log(`${ signal } signal received, waiting 1 second before dying`);
+        console.log(`${signal} signal received, waiting 1 second before dying`);
         await new Promise(resolve => setTimeout(resolve, 1000)); // Wait for 1 second before actually dying
-        console.log(`${ signal } ok, dying...`);
+        console.log(`${signal} ok, dying...`);
     }
 }

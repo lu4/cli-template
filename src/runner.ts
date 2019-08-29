@@ -92,7 +92,7 @@ export class Runner {
                 uncaughtException: true
             })(async signal => {
                 // Make sure we die once
-                if (!dying) {
+                if (dying === false) { // I know that `dying` is a boolean, I like writing this way better
                     dying = true;
 
                     await target.instance.die(signal);
