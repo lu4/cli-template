@@ -7,18 +7,10 @@ import yargs from 'yargs';
 import death from 'death';
 import specialFolder from 'platform-folders';
 
-import { Descriptor, Command, IsCommand } from './command';
+import { Descriptor, Command, IsCommand, PersistMap, CommandState } from './command';
 
 export class Runner {
     public static async main() {
-        const cwd = process.cwd();
-        const pwd = path.join(__dirname, '..');
-        const swd = path.join(specialFolder('userData') || pwd, 'database');
-
-        if (!fs.existsSync(swd)) {
-            fs.mkdirSync(swd);
-        }
-
         let directory = './commands';
         let filenames = fs
             .readdirSync(path.join(__dirname, directory))
@@ -51,9 +43,13 @@ export class Runner {
 
         descriptors.sort((x, y) => x.name < y.name ? -1 : x.name === y.name ? 0 : 1);
 
+        const cwd = process.cwd();
+        const pwd = path.join(__dirname, '..');
+        const scriptName = JSON.parse(fs.readFileSync(path.join(pwd, 'package.json')).toString()).name;
+
         yargs
             .help()
-            .scriptName(JSON.parse(fs.readFileSync(path.join(pwd, 'package.json')).toString()).name)
+            .scriptName(scriptName)
             .usage('Usage: $0 <command> [options]')
             .demandCommand(1);
 
@@ -83,19 +79,90 @@ export class Runner {
         const target = descriptors.find(x => x.name === commandName);
 
         if (target) {
+            const uwd = path.join(specialFolder('userData') || pwd, scriptName, 'user', commandName);
+            const swd = path.join(specialFolder('userData') || pwd, scriptName, 'system', commandName);
+
+            if (!fs.existsSync(swd)) {
+                try {
+                    fs.mkdirSync(swd, { recursive: true });
+                } catch {
+                    // Nothing here
+                }
+            }
+
+            if (!fs.existsSync(uwd)) {
+                try {
+                    fs.mkdirSync(uwd, { recursive: true });
+                } catch {
+                    // Nothing here
+                }
+            }
+
+            debugger;
+            const checkpointPath = path.join(swd, 'checkpoint.json');
+            const prototype = Object.getPrototypeOf(target.instance);
+            const properties = PersistMap.get(prototype);
+
+            if (properties && properties.length) {
+                try {
+                    const state: CommandState = JSON.parse(fs.readFileSync(checkpointPath).toString());
+
+                    for (const property of properties) {
+                        if (property in target.instance) {
+                            target.instance[property] = state[property];
+                        }
+                    }
+                } catch {
+                    // Nothing here
+                }
+            }
+
             let dying = false;
 
-            const handleDeath = async (signal: 'SIGINT' | 'SIGTERM' | 'SIGQUIT' | 'SIGHUP' | 'uncaughtException' | 'debug' | 'finish') => {
+            const handleDeath = async (signal: 'SIGINT' | 'SIGTERM' | 'SIGQUIT' | 'SIGHUP' | 'uncaughtException' | 'debug') => {
                 // Make sure we die once
                 if (dying === false) { // Due to aesthetic reasons
                     dying = true;
 
+                    debugger;
+
                     try {
-                        await target.instance.die(signal);
-                    } finally {
-                        unsubscribe();
-                        process.exit(process.exitCode);
+                        if (properties && properties.length) {
+                            const commandState: CommandState = {};
+
+                            properties.forEach(property => {
+                                commandState[property] = target.instance[property];
+                            });
+
+                            fs.writeFileSync(checkpointPath, JSON.stringify(commandState, null, 2));
+                        }
+                    } catch {
+                        // Nothing here
                     }
+
+                    try {
+                        if (target.instance.catch) {
+                            await target.instance.catch(signal);
+                        }
+                    } catch {
+                        // Nothing here
+                    }
+
+                    try {
+                        if (target.instance.finally) {
+                            await target.instance.finally(signal);
+                        }
+                    } catch {
+                        // Nothing here
+                    }
+
+                    try {
+                        unsubscribe();
+                    } catch {
+                        // Nothing here
+                    }
+
+                    process.exit(process.exitCode);
                 }
             };
 
@@ -103,10 +170,18 @@ export class Runner {
                 // SIGHUP: true, // Add this option if you know what you are doing
                 SIGINT: true, SIGQUIT: true, SIGTERM: true, uncaughtException: true
             })(handleDeath);
-            
-            await target.instance.run(commandName, cwd, pwd, argv);
-            
-            await target.instance.die('finish');
+
+            await target.instance.run({ commandName, currentWorkDir: cwd, projectWorkDir: pwd, systemWorkDir: swd, userWorkDir: uwd }, argv);
+
+            try {
+                fs.unlinkSync(checkpointPath);
+            } catch {
+                // Nothing here
+            }
+
+            if (target.instance.finally) {
+                await target.instance.finally('success');
+            }
         } else {
             console.log(`Command '${commandName}' not found!`);
         }

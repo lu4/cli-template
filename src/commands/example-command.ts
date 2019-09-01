@@ -1,5 +1,5 @@
 import { MapOf } from '../types';
-import { Command, CommandOptions, CommandOptionDeclaration } from '../command';
+import { Command, CommandOptions, CommandOptionDeclaration, Persist, CommandEnvironment } from '../command';
 
 export interface PullCommandOptions {
     someDummyParameter: string;
@@ -34,22 +34,38 @@ export class ExampleCommandNameCommand implements Command {
         return result;
     }
 
-    public async run(name: string, cwd: string, pwd: string, opts: CommandOptions<unknown>): Promise<void> {
+
+    @Persist
+    private persistedValue: number = Math.random();
+
+    public async run(environment: CommandEnvironment, opts: CommandOptions<unknown>): Promise<void> {
         let options = opts as unknown as PullCommandOptions;
 
-        console.log(`Command ${name} successfully executed`);
+        console.log(`Command ${environment.commandName} successfully executed`);
 
         console.log(`Params:`);
         console.log(JSON.stringify(options, null, 2));
 
+        console.log('Persisted value: ' + this.persistedValue);
+        console.log(`Press Ctrl-C to test 'catch' and 'finally' methods`);
+
         await new Promise(resolve => setTimeout(resolve, 10000));
     }
 
-    public async die(signal: 'SIGINT' | 'SIGTERM' | 'SIGQUIT' | 'SIGHUP' | 'uncaughtException' | 'debug' | 'finish') {
+    // Optional: 
+    public async catch(signal: 'SIGINT' | 'SIGTERM' | 'SIGQUIT' | 'SIGHUP' | 'uncaughtException' | 'debug') {
         // Perform all necessary cleanup in this method
 
-        console.log(`${signal} signal received, waiting 1 second before dying`);
+        console.log(`catch: ${signal} signal caught, waiting 1 second before passing controll to 'finally' handler`);
         await new Promise(resolve => setTimeout(resolve, 1000)); // Wait for 1 second before actually dying
-        console.log(`${signal} ok, dying...`);
+    }
+
+    // Optional: 
+    public async finally(signal: 'SIGINT' | 'SIGTERM' | 'SIGQUIT' | 'SIGHUP' | 'uncaughtException' | 'debug' | 'success') {
+        // Perform all necessary cleanup in this method
+
+        console.log(`finally: ${signal} signal caught, waiting 1 second before dying`);
+        await new Promise(resolve => setTimeout(resolve, 1000)); // Wait for 1 second before actually dying
+        console.log(`Successfully handled '${signal}', dying finally...`);
     }
 }

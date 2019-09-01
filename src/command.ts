@@ -12,13 +12,27 @@ export interface CommandOptions<T> {
 
 export type CommandOptionDeclaration = yargs.Options;
 
-export interface Command {
+export interface CommandState {
+    [index: string]: any;
+}
+
+export interface CommandEnvironment {
+    userWorkDir: string;
+    systemWorkDir: string;
+    currentWorkDir: string;
+    projectWorkDir: string;
+
+    commandName: string;
+}
+
+export interface Command extends CommandState {
     description: string;
     options: CommandOptions<CommandOptionDeclaration>;
 
-    run(name: string, cwd: string, pwd: string, options: CommandOptions<unknown>): Promise<void>;
+    run(environment: CommandEnvironment, options: CommandOptions<unknown>): Promise<void>;
 
-    die(signal: 'SIGINT' | 'SIGTERM' | 'SIGQUIT' | 'SIGHUP' | 'uncaughtException' | 'debug' | 'finish'): Promise<void>;
+    catch?(signal: 'SIGINT' | 'SIGTERM' | 'SIGQUIT' | 'SIGHUP' | 'uncaughtException' | 'debug'): Promise<void>;
+    finally?(signal: 'SIGINT' | 'SIGTERM' | 'SIGQUIT' | 'SIGHUP' | 'uncaughtException' | 'debug' | 'success'): Promise<void>;
 }
 
 const CommandSymbol = Symbol('Command');
@@ -28,6 +42,21 @@ export function Command<T extends Command>(constructor: new () => T): new () => 
 
     return constructor;
 }
+
+export const PersistMap = new Map<Command, string[]>();
+
+// tslint:disable-next-line: ban-types
+export function Persist<T extends Command>(target: T, propertyName: string) {
+    debugger;
+    const properties: string[] | undefined = PersistMap.get(target);
+
+    if (properties) {
+        properties.push(propertyName);
+    } else {
+        PersistMap.set(target, [propertyName]);
+    }
+}
+
 
 export function IsCommand<T extends Command>(constructor: new () => T): boolean {
     return Reflect.hasMetadata(CommandSymbol, constructor);
