@@ -174,7 +174,7 @@ export class Runner {
                 await target.instance.run({ commandName, currentWorkDir: cwd, projectWorkDir: pwd, systemWorkDir: swd, userWorkDir: uwd }, argv);
             } catch {
                 if (target.instance.catch) {
-                    target.instance.catch(result = 'uncaughtException');
+                    await target.instance.catch(result = 'uncaughtException');
                 }
             }
 
