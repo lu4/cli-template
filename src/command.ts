@@ -47,7 +47,6 @@ export const PersistMap = new Map<Command, string[]>();
 
 // tslint:disable-next-line: ban-types
 export function Persist<T extends Command>(target: T, propertyName: string) {
-    debugger;
     const properties: string[] | undefined = PersistMap.get(target);
 
     if (properties) {
@@ -56,7 +55,6 @@ export function Persist<T extends Command>(target: T, propertyName: string) {
         PersistMap.set(target, [propertyName]);
     }
 }
-
 
 export function IsCommand<T extends Command>(constructor: new () => T): boolean {
     return Reflect.hasMetadata(CommandSymbol, constructor);

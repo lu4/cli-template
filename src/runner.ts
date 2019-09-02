@@ -98,7 +98,6 @@ export class Runner {
                 }
             }
 
-            debugger;
             const checkpointPath = path.join(swd, 'checkpoint.json');
             const prototype = Object.getPrototypeOf(target.instance);
             const properties = PersistMap.get(prototype);
@@ -123,8 +122,6 @@ export class Runner {
                 // Make sure we die once
                 if (dying === false) { // Due to aesthetic reasons
                     dying = true;
-
-                    debugger;
 
                     try {
                         if (properties && properties.length) {
@@ -171,7 +168,23 @@ export class Runner {
                 SIGINT: true, SIGQUIT: true, SIGTERM: true, uncaughtException: true
             })(handleDeath);
 
-            await target.instance.run({ commandName, currentWorkDir: cwd, projectWorkDir: pwd, systemWorkDir: swd, userWorkDir: uwd }, argv);
+            let result: 'success' | 'uncaughtException' = 'success';
+
+            try {
+                await target.instance.run({ commandName, currentWorkDir: cwd, projectWorkDir: pwd, systemWorkDir: swd, userWorkDir: uwd }, argv);
+            } catch {
+                if (target.instance.catch) {
+                    target.instance.catch(result = 'uncaughtException');
+                }
+            }
+
+            try {
+                if (target.instance.finally) {
+                    await target.instance.finally(result);
+                }
+            } catch {
+                // Nothing here
+            }
 
             try {
                 fs.unlinkSync(checkpointPath);
@@ -179,9 +192,6 @@ export class Runner {
                 // Nothing here
             }
 
-            if (target.instance.finally) {
-                await target.instance.finally('success');
-            }
         } else {
             console.log(`Command '${commandName}' not found!`);
         }
