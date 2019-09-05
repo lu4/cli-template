@@ -53,7 +53,7 @@ export class ExampleCommandNameCommand implements Command {
     }
 
     // Optional: 
-    public async catch(signal: 'SIGINT' | 'SIGTERM' | 'SIGQUIT' | 'SIGHUP' | 'uncaughtException' | 'debug') {
+    public async catch(signal: 'SIGINT' | 'SIGTERM' | 'SIGQUIT' | 'SIGHUP' | 'uncaughtException' | 'unhandledRejection') {
         // Perform all necessary cleanup in this method
 
         console.log(`catch: ${signal} signal caught, waiting 1 second before passing controll to 'finally' handler`);
@@ -61,7 +61,7 @@ export class ExampleCommandNameCommand implements Command {
     }
 
     // Optional: 
-    public async finally(signal: 'SIGINT' | 'SIGTERM' | 'SIGQUIT' | 'SIGHUP' | 'uncaughtException' | 'debug' | 'success') {
+    public async finally(signal: 'SIGINT' | 'SIGTERM' | 'SIGQUIT' | 'SIGHUP' | 'uncaughtException' | 'unhandledRejection' | 'success') {
         // Perform all necessary cleanup in this method
 
         console.log(`finally: ${signal} signal caught, waiting 1 second before dying`);

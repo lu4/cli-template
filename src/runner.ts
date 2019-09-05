@@ -4,7 +4,6 @@ import * as path from 'path';
 
 import fs from 'fs';
 import yargs from 'yargs';
-import death from 'death';
 import specialFolder from 'platform-folders';
 
 import { Descriptor, Command, IsCommand, PersistMap, CommandState } from './command';
@@ -118,7 +117,7 @@ export class Runner {
 
             let dying = false;
 
-            const handleDeath = async (signal: 'SIGINT' | 'SIGTERM' | 'SIGQUIT' | 'SIGHUP' | 'uncaughtException' | 'debug') => {
+            const handleDeath = async (signal: 'SIGINT' | 'SIGTERM' | 'SIGQUIT' | 'SIGHUP' | 'uncaughtException' | 'unhandledRejection') => {
                 // Make sure we die once
                 if (dying === false) { // Due to aesthetic reasons
                     dying = true;
@@ -145,6 +144,7 @@ export class Runner {
                         // Nothing here
                     }
 
+
                     try {
                         if (target.instance.finally) {
                             await target.instance.finally(signal);
@@ -153,20 +153,15 @@ export class Runner {
                         // Nothing here
                     }
 
-                    try {
-                        unsubscribe();
-                    } catch {
-                        // Nothing here
-                    }
-
                     process.exit(process.exitCode);
                 }
             };
 
-            const unsubscribe = death({
-                // SIGHUP: true, // Add this option if you know what you are doing
-                SIGINT: true, SIGQUIT: true, SIGTERM: true, uncaughtException: true
-            })(handleDeath);
+            process.on('SIGINT', async () => handleDeath('SIGINT'));
+            process.on('SIGQUIT', async () => handleDeath('SIGQUIT'));
+            process.on('SIGTERM', async () => handleDeath('SIGTERM'));
+            process.on('uncaughtException', async () => handleDeath('uncaughtException'));
+            process.on('unhandledRejection', async () => handleDeath('unhandledRejection'));
 
             let result: 'success' | 'uncaughtException' = 'success';
 
