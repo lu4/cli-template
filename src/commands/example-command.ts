@@ -34,7 +34,6 @@ export class ExampleCommandNameCommand implements Command {
         return result;
     }
 
-
     @Persist
     private persistedValue: number = Math.random();
 
@@ -47,9 +46,9 @@ export class ExampleCommandNameCommand implements Command {
         console.log(JSON.stringify(options, null, 2));
 
         console.log('Persisted value: ' + this.persistedValue);
-        console.log(`Press Ctrl-C to test 'catch' and 'finally' methods`);
+        console.log(`Either wait 5 seconds or press Ctrl-C to test 'catch' and 'finally' methods`);
 
-        await new Promise(resolve => setTimeout(resolve, 10000));
+        await new Promise(resolve => setTimeout(resolve, 5000));
     }
 
     // Optional: 
