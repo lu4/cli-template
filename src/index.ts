@@ -16,9 +16,9 @@ const onHandlerOriginal: Function = process.on;
 const exitHandlerOriginal: Function = process.exit;
 const wrapperToListener: Map<Function, Function> = new Map();
 const listenerToWrappers: Map<Function, Set<Function>> = new Map();
-const eventHandlerQueues: Map<string | symbol, Set<Function>> = new Map();
+const eventHandlerQueueToSignal: Map<string | symbol, Set<Function>> = new Map();
 
-const onHandlerFactory = (
+const eventHandlerFactory = (
     eventArguments: Deque<IArguments>,
     eventHandlers: Set<Function>,
     state: { executions: number }
@@ -45,7 +45,7 @@ const onHandlerFactory = (
 };
 
 const on = (event: string, listener: Function): NodeJS.Process => {
-    let queue = eventHandlerQueues.get(event);
+    let queue = eventHandlerQueueToSignal.get(event);
     let wrapper = function <T>(this: T) {
         return listener.apply(this, arguments);
     };
@@ -67,15 +67,15 @@ const on = (event: string, listener: Function): NodeJS.Process => {
         const deque = new Deque<IArguments>();
 
         // We use wrapper function to bot support duplicates in a Set and once functionality.
-        eventHandlerQueues.set(event, queue = new Set([wrapper]));
-        onHandlerOriginal.call(process, event, onHandlerFactory(deque, queue, executions));
+        eventHandlerQueueToSignal.set(event, queue = new Set([wrapper]));
+        onHandlerOriginal.call(process, event, eventHandlerFactory(deque, queue, executions));
     }
 
     return process;
 };
 
 const once = (event: string, listener: Function): NodeJS.Process => {
-    let queue = eventHandlerQueues.get(event);
+    let queue = eventHandlerQueueToSignal.get(event);
     const wrapper = function <T>(this: T) {
         try {
             return listener.apply(this, arguments);
@@ -104,15 +104,15 @@ const once = (event: string, listener: Function): NodeJS.Process => {
         const deque = new Deque<IArguments>();
 
         // We use wrapper function to bot support duplicates in a Set and once functionality.
-        eventHandlerQueues.set(event, queue = new Set([wrapper]));
-        onHandlerOriginal.call(process, event, onHandlerFactory(deque, queue, executions));
+        eventHandlerQueueToSignal.set(event, queue = new Set([wrapper]));
+        onHandlerOriginal.call(process, event, eventHandlerFactory(deque, queue, executions));
     }
 
     return process;
 };
 
 const removeListener = (event: string, listener: Function): NodeJS.Process => {
-    let queue = eventHandlerQueues.get(event);
+    let queue = eventHandlerQueueToSignal.get(event);
 
     if (queue) {
         const wrappers = listenerToWrappers.get(listener);
@@ -132,7 +132,7 @@ const removeListener = (event: string, listener: Function): NodeJS.Process => {
 
 const removeAllListeners = (event?: string | symbol): NodeJS.Process => {
     if (event) {
-        const queue = eventHandlerQueues.get(event);
+        const queue = eventHandlerQueueToSignal.get(event);
 
         if (queue) {
             for (const wrapper of queue) {
@@ -144,7 +144,7 @@ const removeAllListeners = (event?: string | symbol): NodeJS.Process => {
                     if (wrappers) {
                         wrappers.delete(wrapper);
 
-                        if (wrappers.size === 0) {
+                        if (wrappers.size < 1) {
                             listenerToWrappers.delete(listener);
                         }
                     }
@@ -153,11 +153,10 @@ const removeAllListeners = (event?: string | symbol): NodeJS.Process => {
                 wrapperToListener.delete(wrapper);
             }
         }
-
     } else {
         wrapperToListener.clear();
         listenerToWrappers.clear();
-        eventHandlerQueues.clear();
+        eventHandlerQueueToSignal.clear();
     }
 
     return process;
